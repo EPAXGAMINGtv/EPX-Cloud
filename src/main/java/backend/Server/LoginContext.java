@@ -5,6 +5,7 @@ import backend.Manager.DBManager;
 import backend.login.Session;
 import backend.login.SessionManager;
 import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 public class LoginContext implements ServerContext {
 
     private final HtmlDoc loginPage;
-    private  static DBManager dbManager;
+    private static DBManager dbManager;
 
     public LoginContext(HtmlDoc loginPage) {
         this.loginPage = loginPage;
@@ -72,6 +73,6 @@ public class LoginContext implements ServerContext {
 
     private boolean checkLogin(String username, String password) {
         dbManager = CloudServerMain.getDBManager();
-        return dbManager.checkForLogin(username,password);
+        return dbManager.checkForLogin(username, password);
     }
 }

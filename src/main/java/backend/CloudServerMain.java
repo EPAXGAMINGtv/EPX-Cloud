@@ -32,6 +32,10 @@ public class CloudServerMain {
         server.addContext(logout);
         UploadContext uploadContext =  new UploadContext();
         server.addContext(uploadContext);
+        DownloadContext downloadContext = new DownloadContext();
+        server.addContext(downloadContext);
+        FilesContext filesContext = new FilesContext();
+        server.addContext(filesContext);
         RegisterContext registerContext = new RegisterContext(HtmlDoc.scan("html/register.html"));
         server.addContext(registerContext);
         LoginContext logincontext =  new LoginContext(HtmlDoc.scan("html/login.html"));

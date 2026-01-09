@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>EPX Cloud – Logout</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/html/assets/icon.png">
     <style>
         * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
 
@@ -16,7 +15,7 @@
             flex-direction: column;
         }
 
-        /* HEADER */
+
         header {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -137,14 +136,12 @@
 
 <script>
     function logout() {
-        // Alle Cookies löschen
         document.cookie.split(";").forEach(cookie => {
             const eqPos = cookie.indexOf("=");
             const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
         });
 
-        // Weiterleiten zum Login
         window.location.href = "/login";
     }
 </script>
