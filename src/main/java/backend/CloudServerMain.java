@@ -26,6 +26,7 @@ public class CloudServerMain {
         server.setIcon("html/assets/icon.png");
         HtmlContext index = new HtmlContext("/",HtmlDoc.scan("html/index.html"));
         server.addContext(index);
+        //
         RegisterContext registerContext = new RegisterContext(HtmlDoc.scan("html/register.html"));
         server.addContext(registerContext);
         LoginContext logincontext =  new LoginContext(HtmlDoc.scan("html/login.html"));
