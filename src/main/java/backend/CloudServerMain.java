@@ -1,6 +1,7 @@
 package backend;
 import backend.Manager.DBManager;
 import backend.Server.*;
+import backend.filemanager.FileManager;
 import backend.logger.Logger;
 import backend.serverutils.PropertiesManager;
 import com.sun.net.httpserver.HttpContext;
@@ -13,6 +14,7 @@ public class CloudServerMain {
     private static PropertiesManager serverpropetiesmgr;
     private static EpxHTTPServer server;
     private static DBManager dbManager;
+    private  static FileManager fmgr;
 
     public static void main(String[] args){
         Logger.info("starting EpxCloudServer...");
@@ -26,13 +28,18 @@ public class CloudServerMain {
         server.setIcon("html/assets/icon.png");
         HtmlContext index = new HtmlContext("/",HtmlDoc.scan("html/index.html"));
         server.addContext(index);
-        //
+        HtmlContext logout = new HtmlContext("/logout",HtmlDoc.scan("html/logout.html"));
+        server.addContext(logout);
+        UploadContext uploadContext =  new UploadContext();
+        server.addContext(uploadContext);
         RegisterContext registerContext = new RegisterContext(HtmlDoc.scan("html/register.html"));
         server.addContext(registerContext);
         LoginContext logincontext =  new LoginContext(HtmlDoc.scan("html/login.html"));
         server.addContext(logincontext);
         HomeContext homeContext = new HomeContext(HtmlDoc.scan("html/home.html"));
         server.addContext(homeContext);
+        fmgr = new FileManager(dbManager);
+        fmgr.start("cloudfiles");
         Scanner input = new Scanner(System.in);
         running =true;
         if (running) {
@@ -47,10 +54,36 @@ public class CloudServerMain {
             String command = input.nextLine();
             if (command.equalsIgnoreCase("stop")){
                 stopServer();
+                Logger.close();
+                System.exit(0);
+            }else if(command.equalsIgnoreCase("restart")){
+                stopServer();
+                restartApplication();
+            }else {
+                Logger.info("invalid command :"+command+" !");
             }
         }
         stopServer();
     }
+    private static void restartApplication() {
+        try {
+            String javaBin = System.getProperty("java.home") + "/bin/java";
+            String classPath = System.getProperty("java.class.path");
+            String className = CloudServerMain.class.getName();
+
+            ProcessBuilder builder = new ProcessBuilder(
+                    javaBin, "-cp", classPath, className
+            );
+            builder.start();
+
+            stopServer();
+            System.exit(0);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void stopServer(){
         Logger.info("server stoping soon!");
@@ -58,8 +91,6 @@ public class CloudServerMain {
         dbManager.disconectFromDB();
         running =false;
         Logger.info("server Marked as offline!");
-        Logger.close();
-        System.exit(0);
     }
 
     public  static PropertiesManager getServerpropetiesmgr(){

@@ -47,7 +47,7 @@ public class EpxHTTPServer {
 
 
     public void stopServer(){
-        Logger.info("stopping server ing 10 seconds...");
+        Logger.info("stopping server in 10 seconds...");
         try{
             Thread.sleep(10000);
         } catch (InterruptedException e) {

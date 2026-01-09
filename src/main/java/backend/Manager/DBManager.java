@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBManager {
     private static String DATABASE_URL;
@@ -110,6 +112,29 @@ public class DBManager {
             return false;
         }
     }
+
+    public List<String> getAllUserNamesAsList() {
+        List<String> users = new ArrayList<>();
+
+        if (connection == null) return users;
+
+        try {
+            var ps = connection.prepareStatement(
+                    "SELECT user_name FROM user_data"
+            );
+
+            var rs = ps.executeQuery();
+            while (rs.next()) {
+                users.add(rs.getString("user_name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
 
     public boolean deleteAcount(String username) {
         if (connection == null) return false;
