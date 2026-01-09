@@ -1,0 +1,4 @@
+[2026-01-08 15:49:32] [INFO] Logger initzialized!
+[2026-01-08 15:49:32] [INFO] starting EpxCloudServer...
+[2026-01-08 15:49:32] [INFO] loading propeties file
+[2026-01-08 15:49:33] [INFO] failed to connect to the database check in the propeties if everything is correct!

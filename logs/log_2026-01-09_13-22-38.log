@@ -1,0 +1,16 @@
+[2026-01-09 13:22:38] [INFO] Logger initzialized!
+[2026-01-09 13:22:38] [INFO] starting EpxCloudServer...
+[2026-01-09 13:22:38] [INFO] loading propeties file
+[2026-01-09 13:22:39] [INFO] connected to database succesfully!
+[2026-01-09 13:22:39] [INFO] Table is now ready
+[2026-01-09 13:22:40] [ERROR] User already exists: epx
+[2026-01-09 13:22:40] [INFO] creating HTTP Server ...
+[2026-01-09 13:22:40] [INFO] starting HTTP Server ...
+[2026-01-09 13:22:40] [INFO] HTTP server started succesfully!
+[2026-01-09 13:22:40] [INFO] Context registert: /
+[2026-01-09 13:22:40] [INFO] Context registert: /login
+[2026-01-09 13:22:40] [INFO] Context registert: /home
+[2026-01-09 13:22:40] [INFO] server marked as running!
+[2026-01-09 13:23:06] [INFO] hased passwort succesfully
+[2026-01-09 13:23:08] [INFO] hased passwort succesfully
+[2026-01-09 13:23:22] [INFO] hased passwort succesfully

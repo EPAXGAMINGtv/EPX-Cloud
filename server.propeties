@@ -1,0 +1,8 @@
+#Server Properties
+#Thu Jan 08 15:50:19 CET 2026
+database_ip=phpmyadmin.techsvc.de
+database_name=s375_mcraft-ist-ein-mongo
+database_port=3306
+database_pw=cODBB72nQIsU7JQc!7ptY^7=
+database_user=u375_1UTKKzFEP1
+port=80

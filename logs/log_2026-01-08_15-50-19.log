@@ -1,0 +1,6 @@
+[2026-01-08 15:50:19] [INFO] Logger initzialized!
+[2026-01-08 15:50:19] [INFO] starting EpxCloudServer...
+[2026-01-08 15:50:19] [INFO] loading propeties file
+[2026-01-08 15:50:19] [INFO] setting default properties
+[2026-01-08 15:50:19] [INFO] propeties file did not exist created now
+[2026-01-08 15:50:20] [INFO] failed to connect to the database check in the propeties if everything is correct!

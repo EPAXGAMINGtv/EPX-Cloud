@@ -1,0 +1,11 @@
+[2026-01-08 15:51:55] [INFO] Logger initzialized!
+[2026-01-08 15:51:55] [INFO] starting EpxCloudServer...
+[2026-01-08 15:51:55] [INFO] loading propeties file
+[2026-01-08 15:51:57] [INFO] connected to database succesfully!
+[2026-01-08 15:51:57] [INFO] creating HTTP Server ...
+[2026-01-08 15:51:57] [INFO] starting HTTP Server ...
+[2026-01-08 15:51:57] [INFO] HTTP server started succesfully!
+[2026-01-08 15:51:57] [INFO] Context registert: /
+[2026-01-08 15:51:57] [INFO] Context registert: /login
+[2026-01-08 15:51:57] [INFO] Context registert: /home
+[2026-01-08 15:51:57] [INFO] server marked as running!

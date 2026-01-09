@@ -1,0 +1,13 @@
+[2026-01-09 14:53:40] [INFO] Logger initzialized!
+[2026-01-09 14:53:40] [INFO] starting EpxCloudServer...
+[2026-01-09 14:53:40] [INFO] loading propeties file
+[2026-01-09 14:53:41] [INFO] connected to database succesfully!
+[2026-01-09 14:53:41] [INFO] Table is now ready
+[2026-01-09 14:53:41] [ERROR] User already exists: epx
+[2026-01-09 14:53:41] [INFO] creating HTTP Server ...
+[2026-01-09 14:53:41] [INFO] starting HTTP Server ...
+[2026-01-09 14:53:41] [INFO] Context registert: /
+[2026-01-09 14:53:41] [INFO] Context registert: /login
+[2026-01-09 14:53:41] [INFO] Context registert: /home
+[2026-01-09 14:53:41] [INFO] server marked as running!
+[2026-01-09 14:53:42] [ERROR] Failed to load PNG favicon from: html/assets/icon.png

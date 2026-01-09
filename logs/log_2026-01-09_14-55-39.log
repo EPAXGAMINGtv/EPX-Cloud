@@ -1,0 +1,20 @@
+[2026-01-09 14:55:39] [INFO] Logger initzialized!
+[2026-01-09 14:55:39] [INFO] starting EpxCloudServer...
+[2026-01-09 14:55:39] [INFO] loading propeties file
+[2026-01-09 14:55:40] [INFO] connected to database succesfully!
+[2026-01-09 14:55:40] [INFO] Table is now ready
+[2026-01-09 14:55:40] [ERROR] User already exists: epx
+[2026-01-09 14:55:40] [INFO] creating HTTP Server ...
+[2026-01-09 14:55:40] [INFO] starting HTTP Server ...
+[2026-01-09 14:55:40] [INFO] Context registert: /
+[2026-01-09 14:55:40] [INFO] Context registert: /register
+[2026-01-09 14:55:40] [INFO] Context registert: /login
+[2026-01-09 14:55:40] [INFO] Context registert: /home
+[2026-01-09 14:55:40] [INFO] server marked as running!
+[2026-01-09 14:55:50] [ERROR] Failed to load PNG favicon from: html/assets/icon.png
+[2026-01-09 14:56:09] [INFO] hased passwort succesfully
+[2026-01-09 14:56:09] [INFO] User created: EPAXGAMING
+[2026-01-09 14:56:23] [INFO] hased passwort succesfully
+[2026-01-09 14:59:13] [INFO] hased passwort succesfully
+[2026-01-09 14:59:13] [INFO] User created: epaxgaming
+[2026-01-09 14:59:26] [INFO] hased passwort succesfully

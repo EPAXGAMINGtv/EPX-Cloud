@@ -1,0 +1,35 @@
+[2026-01-09 14:16:20] [INFO] Logger initzialized!
+[2026-01-09 14:16:20] [INFO] starting EpxCloudServer...
+[2026-01-09 14:16:20] [INFO] loading propeties file
+[2026-01-09 14:16:21] [INFO] connected to database succesfully!
+[2026-01-09 14:16:21] [INFO] Table is now ready
+[2026-01-09 14:16:21] [ERROR] User already exists: epx
+[2026-01-09 14:16:21] [INFO] creating HTTP Server ...
+[2026-01-09 14:16:21] [INFO] starting HTTP Server ...
+[2026-01-09 14:16:21] [INFO] HTTP server started succesfully!
+[2026-01-09 14:16:21] [INFO] Context registert: /
+[2026-01-09 14:16:21] [INFO] Context registert: /login
+[2026-01-09 14:16:21] [INFO] Context registert: /home
+[2026-01-09 14:16:21] [INFO] server marked as running!
+[2026-01-09 14:17:53] [INFO] hased passwort succesfully
+[2026-01-09 14:17:54] [INFO] hased passwort succesfully
+[2026-01-09 14:17:54] [INFO] hased passwort succesfully
+[2026-01-09 14:17:54] [INFO] hased passwort succesfully
+[2026-01-09 14:17:54] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:55] [INFO] hased passwort succesfully
+[2026-01-09 14:17:56] [INFO] hased passwort succesfully
+[2026-01-09 14:17:56] [INFO] hased passwort succesfully
+[2026-01-09 14:17:56] [INFO] hased passwort succesfully
+[2026-01-09 14:17:56] [INFO] hased passwort succesfully
+[2026-01-09 14:17:57] [INFO] hased passwort succesfully
+[2026-01-09 14:17:57] [INFO] hased passwort succesfully
+[2026-01-09 14:17:57] [INFO] hased passwort succesfully
+[2026-01-09 14:17:57] [INFO] hased passwort succesfully
+[2026-01-09 14:17:57] [INFO] hased passwort succesfully
+[2026-01-09 14:17:59] [INFO] hased passwort succesfully
+[2026-01-09 14:17:59] [INFO] hased passwort succesfully
