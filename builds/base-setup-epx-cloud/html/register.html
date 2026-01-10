@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPX Cloud – Register</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #0a2540, #1e90ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+        .register-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            width: 360px;
+            max-width: 90%;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .logo span {
+            font-size: 14px;
+            color: #b6d6ff;
+        }
+        .input-group {
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label {
+            font-size: 13px;
+            margin-bottom: 6px;
+            color: #cfe6ff;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 14px;
+        }
+        .input-group input::placeholder {
+            color: #d0e5ff;
+        }
+        .error-msg {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        .register-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, #4da3ff, #1e90ff);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .register-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(30, 144, 255, 0.6);
+        }
+        .login-text {
+            text-align: center;
+            font-size: 13px;
+            color: #cfe6ff;
+            margin-top: 20px;
+            letter-spacing: 0.5px;
+        }
+        .login-text a {
+            color: #ffffff;
+            font-weight: 600;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .login-text a:hover {
+            color: #4da3ff;
+            text-shadow: 0 0 4px rgba(30, 144, 255, 0.7);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 22px;
+            font-size: 12px;
+            color: #b6d6ff;
+        }
+        @media (max-width: 400px) {
+            .register-card {
+                padding: 30px 20px;
+            }
+            .register-btn {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="register-card">
+    <div class="logo">
+        <h1>EPX Cloud</h1>
+        <span>Create Your Account</span>
+    </div>
+    <div class="input-group">
+        <label for="username">Account Name</label>
+        <input id="username" type="text" placeholder="Enter your account name" required>
+        <span id="username-error" class="error-msg"></span>
+    </div>
+    <div class="input-group">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Enter your password" required>
+        <span id="password-error" class="error-msg"></span>
+    </div>
+    <div class="input-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input id="confirm-password" type="password" placeholder="Repeat your password" required>
+        <span id="confirm-error" class="error-msg"></span>
+    </div>
+    <button class="register-btn" type="button" onclick="register()">Register</button>
+    <div class="login-text">
+        Already have an account? <a href="/login">Login here</a>
+    </div>
+    <div class="footer">© 2026 EPX Cloud</div>
+</div>
+
+<script>
+    function showError(inputId, message) {
+        const errorEl = document.getElementById(inputId + '-error');
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+    }
+
+    function clearErrors() {
+        document.getElementById('username-error').style.display = 'none';
+        document.getElementById('password-error').style.display = 'none';
+        document.getElementById('confirm-error').style.display = 'none';
+    }
+
+    async function register() {
+        clearErrors();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const confirm = document.getElementById("confirm-password").value;
+
+        if (!username) { showError('username', 'Please enter an account name'); return; }
+        if (!password) { showError('password', 'Please enter a password'); return; }
+        if (!confirm) { showError('confirm', 'Please confirm your password'); return; }
+        if (password !== confirm) { showError('confirm', 'Passwords do not match'); return; }
+
+        try {
+            const response = await fetch("/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+            });
+
+            if (response.status === 302) {
+                const redirectURL = response.headers.get("Location");
+                if (redirectURL) window.location.href = redirectURL;
+            } else if (response.status === 200) {
+                window.location.href = "/login";
+            } else {
+                const text = await response.text();
+                showError('username', text);
+            }
+
+        } catch (err) {
+            showError('username', 'Error connecting to server');
+        }
+    }
+</script>
+</body>
+</html>

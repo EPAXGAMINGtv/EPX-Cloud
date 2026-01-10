@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EPX Cloud – Logout</title>
+    <style>
+        * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
+
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #0a2540, #1e90ff);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 {
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        header nav a {
+            color: #b6d6ff;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        header nav a:hover { color: #ffffff; }
+
+        /* CARD */
+        .logout-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            width: 380px;
+            max-width: 90%;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            margin: auto;
+            text-align: center;
+        }
+
+        .logout-card h2 {
+            margin-top: 0;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .logout-card p {
+            color: #cfe6ff;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* BUTTONS */
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff4d4d, #cc0000);
+            color: white;
+            box-shadow: 0 8px 18px rgba(255, 0, 0, 0.4);
+        }
+
+        .cancel-btn {
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(255, 255, 255, 0.25);
+        }
+
+        .cancel-btn:hover {
+            box-shadow: 0 8px 18px rgba(255, 255, 255, 0.45);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #b6d6ff;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>EPX Cloud</h1>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/upload">Upload</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+
+<div class="logout-card">
+    <h2>Log Out</h2>
+    <p>Do you really want to log out of your EPX Cloud account?</p>
+
+    <div class="btn-row">
+        <button class="btn logout-btn" onclick="logout()">Logout</button>
+        <button class="btn cancel-btn" onclick="window.location.href='/home'">Cancel</button>
+    </div>
+</div>
+
+<footer>
+    © 2026 EPX Cloud
+</footer>
+
+<script>
+    function logout() {
+        document.cookie.split(";").forEach(cookie => {
+            const eqPos = cookie.indexOf("=");
+            const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+        });
+
+        window.location.href = "/login";
+    }
+</script>
+
+</body>
+</html>
