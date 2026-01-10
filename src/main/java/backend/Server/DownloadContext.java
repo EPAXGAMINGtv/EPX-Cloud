@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class DownloadContext implements ServerContext {
 
@@ -27,7 +29,7 @@ public class DownloadContext implements ServerContext {
             return;
         }
 
-        String sessionId = cookie.split("SESSION=")[1];
+        String sessionId = cookie.split("SESSION=")[1].split(";")[0];
         Session session = SessionManager.getSession(sessionId);
         if (session == null) {
             exchange.getResponseHeaders().add("Location", "/login");
@@ -36,11 +38,27 @@ public class DownloadContext implements ServerContext {
         }
 
         String query = exchange.getRequestURI().getQuery();
-        String filename = query.split("file=")[1];
+        if (query == null || !query.startsWith("file=")) {
+            exchange.sendResponseHeaders(404, -1);
+            return;
+        }
 
-        Path file = Path.of("cloudfiles", session.username, filename);
+        String filePath = URLDecoder.decode(query.substring(5), StandardCharsets.UTF_8);
 
-        if (!Files.exists(file)) {
+        if (filePath.contains("..") || filePath.startsWith("/") || filePath.startsWith("\\")) {
+            exchange.sendResponseHeaders(403, -1);
+            return;
+        }
+
+        Path userDir = Path.of("cloudfiles", session.username);
+        Path file = userDir.resolve(filePath);
+
+        if (!file.normalize().startsWith(userDir.normalize())) {
+            exchange.sendResponseHeaders(403, -1);
+            return;
+        }
+
+        if (!Files.exists(file) || Files.isDirectory(file)) {
             exchange.sendResponseHeaders(404, -1);
             return;
         }
@@ -49,6 +67,8 @@ public class DownloadContext implements ServerContext {
 
         String contentType = Files.probeContentType(file);
         if (contentType == null) contentType = "application/octet-stream";
+
+        String filename = file.getFileName().toString();
 
         exchange.getResponseHeaders().add("Content-Type", contentType);
         exchange.getResponseHeaders().add("Content-Disposition", "attachment; filename=\"" + filename + "\"");

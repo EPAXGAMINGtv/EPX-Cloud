@@ -1,4 +1,4 @@
-package backend.filemanager;
+package backend.file;
 
 import backend.Manager.DBManager;
 import backend.logger.Logger;

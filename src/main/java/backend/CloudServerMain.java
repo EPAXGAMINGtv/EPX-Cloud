@@ -1,10 +1,11 @@
 package backend;
 import backend.Manager.DBManager;
 import backend.Server.*;
-import backend.filemanager.FileManager;
+import backend.file.FileManager;
 import backend.logger.Logger;
+import backend.login.Session;
+import backend.login.SessionManager;
 import backend.serverutils.PropertiesManager;
-import com.sun.net.httpserver.HttpContext;
 
 import java.util.Scanner;
 
@@ -23,17 +24,20 @@ public class CloudServerMain {
         dbManager = new DBManager();
         dbManager.connectToDB();
         dbManager.createTableIfNotExistsUserdata();
-        dbManager.createNewAccount("epx","test123");
         server = new EpxHTTPServer(serverpropetiesmgr);
         server.setIcon("html/assets/icon.png");
         HtmlContext index = new HtmlContext("/",HtmlDoc.scan("html/index.html"));
         server.addContext(index);
         HtmlContext logout = new HtmlContext("/logout",HtmlDoc.scan("html/logout.html"));
         server.addContext(logout);
+        DeleteContext deleteContext = new DeleteContext();
+        server.addContext(deleteContext);
         UploadContext uploadContext =  new UploadContext();
         server.addContext(uploadContext);
         DownloadContext downloadContext = new DownloadContext();
         server.addContext(downloadContext);
+        CreateFolderContext createFolderContext = new CreateFolderContext();
+        server.addContext(createFolderContext);
         FilesContext filesContext = new FilesContext();
         server.addContext(filesContext);
         RegisterContext registerContext = new RegisterContext(HtmlDoc.scan("html/register.html"));
@@ -56,6 +60,7 @@ public class CloudServerMain {
         while (running){
             System.out.print("EPX-CLOUD> ");
             String command = input.nextLine();
+            Session test=SessionManager.createSession("epaxgaming");
             if (command.equalsIgnoreCase("stop")){
                 stopServer();
                 Logger.close();

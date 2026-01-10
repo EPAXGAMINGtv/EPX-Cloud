@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 public class FilesContext implements ServerContext {
 
@@ -19,7 +21,6 @@ public class FilesContext implements ServerContext {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
-        // --- SESSION CHECK ---
         String cookieHeader = exchange.getRequestHeaders().getFirst("Cookie");
         if (cookieHeader == null) {
             redirectToLogin(exchange);
@@ -46,40 +47,113 @@ public class FilesContext implements ServerContext {
             return;
         }
 
-        // --- USER DIRECTORY ---
+        String query = exchange.getRequestURI().getQuery();
+        var ref = new Object() {
+            String currentFolder = "";
+        };
+        if (query != null && query.startsWith("folder=")) {
+            ref.currentFolder = URLDecoder.decode(query.substring(7), StandardCharsets.UTF_8);
+            if (ref.currentFolder.contains("..") || ref.currentFolder.startsWith("/") || ref.currentFolder.startsWith("\\")) {
+                ref.currentFolder = "";
+            }
+        }
+
         Path userDir = Path.of("cloudfiles", session.username);
         Files.createDirectories(userDir);
 
-        // --- LOAD HTML TEMPLATE ---
+        Path currentPath = ref.currentFolder.isEmpty() ? userDir : userDir.resolve(ref.currentFolder);
+
+        if (!currentPath.normalize().startsWith(userDir.normalize())) {
+            redirectToLogin(exchange);
+            return;
+        }
+
+        Files.createDirectories(currentPath);
+
         HtmlDoc doc = HtmlDoc.scan("html/files.html");
         String html = doc.getHtml();
 
-        // --- BUILD FILE LIST ---
+        StringBuilder breadcrumb = new StringBuilder();
+        breadcrumb.append("<a href='/files' style='color: #4da3ff; text-decoration: none;'>📁 Root</a>");
+
+        if (!ref.currentFolder.isEmpty()) {
+            String[] parts = ref.currentFolder.split("/");
+            String accumulatedPath = "";
+            for (String part : parts) {
+                if (!part.isEmpty()) {
+                    accumulatedPath += (accumulatedPath.isEmpty() ? "" : "/") + part;
+                    String encodedPath = URLEncoder.encode(accumulatedPath, StandardCharsets.UTF_8);
+                    breadcrumb.append(" / <a href='/files?folder=").append(encodedPath)
+                            .append("' style='color: #4da3ff; text-decoration: none;'>")
+                            .append(part).append("</a>");
+                }
+            }
+        }
+
         StringBuilder list = new StringBuilder();
 
-        try (var stream = Files.list(userDir)) {
-            stream.forEach(path -> {
-                String name = path.getFileName().toString();
+        list.append("""
+            <div style="margin: 12px; padding: 14px; background: rgba(77,163,255,0.15); border-radius: 10px; border: 2px dashed rgba(77,163,255,0.5);">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" id="new-folder-name" placeholder="Folder Name" style="flex: 1; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #fff; font-size: 14px;">
+                    <button onclick="createFolder()" style="padding: 10px 20px; background: linear-gradient(135deg, #4da3ff, #66ffcc); border: none; border-radius: 6px; color: #000; font-weight: 600; cursor: pointer; font-size: 14px;">📁 Create Folder</button>
+                </div>
+            </div>
+            """);
 
-                list.append("""
-                    <div class="file-item">
-                        <span class="file-name">%s</span>
-                        <a href="/download?file=%s">
-                            <button class="download-btn">Download</button>
-                        </a>
-                    </div>
-                    """.formatted(name, name));
+        try (var stream = Files.list(currentPath)) {
+            stream.sorted((a, b) -> {
+                boolean aIsDir = Files.isDirectory(a);
+                boolean bIsDir = Files.isDirectory(b);
+                if (aIsDir && !bIsDir) return -1;
+                if (!aIsDir && bIsDir) return 1;
+                return a.getFileName().toString().compareToIgnoreCase(b.getFileName().toString());
+            }).forEach(path -> {
+                String name = path.getFileName().toString();
+                boolean isDirectory = Files.isDirectory(path);
+
+                String relativePath = ref.currentFolder.isEmpty() ? name : ref.currentFolder + "/" + name;
+                String encodedPath = URLEncoder.encode(relativePath, StandardCharsets.UTF_8);
+
+                if (isDirectory) {
+                    list.append("""
+                        <div class="file-item" style="background: rgba(77,163,255,0.12);">
+                            <a href="/files?folder=%s" style="flex: 1; text-decoration: none; color: #4da3ff; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                📁 <span class="file-name">%s</span>
+                            </a>
+                            <div class="menu-wrapper">
+                                <button class="menu-btn">⋮</button>
+                                <div class="menu">
+                                    <a href="/delete?file=%s" class="delete">Delete Folder</a>
+                                </div>
+                            </div>
+                        </div>
+                        """.formatted(encodedPath, name, encodedPath));
+                } else {
+                    list.append("""
+                        <div class="file-item">
+                            <span class="file-name">📄 %s</span>
+                            <div class="menu-wrapper">
+                                <button class="menu-btn">⋮</button>
+                                <div class="menu">
+                                    <a href="/download?file=%s">Download</a>
+                                    <a href="/delete?file=%s" class="delete">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        """.formatted(name, encodedPath, encodedPath));
+                }
             });
         }
 
-        if (list.isEmpty()) {
-            list.append("<p>No files uploaded yet.</p>");
+        if (list.toString().equals("")) {
+            list.append("<p style='text-align: center; color: #9bbfe5; margin-top: 40px;'>This folder is empty.</p>");
         }
 
-        // --- INSERT INTO HTML ---
+        html = html.replace("<!-- BREADCRUMB -->", breadcrumb.toString());
         html = html.replace("<!-- FILE_LIST -->", list.toString());
+        html = html.replace("<!-- CURRENT_FOLDER -->", ref.currentFolder);
 
-        // --- SEND RESPONSE ---
         byte[] data = html.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
         exchange.sendResponseHeaders(200, data.length);

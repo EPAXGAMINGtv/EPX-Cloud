@@ -12,7 +12,7 @@ public class Hasher {
             for (byte b : hash) {
                 sb.append(String.format("%02x", b));
             }
-            Logger.info("hased passwort succesfully");
+            Logger.info("hashed passwort succesfully");
             return sb.toString();
         } catch (Exception e) {
             Logger.error("failed to hash passwort");
