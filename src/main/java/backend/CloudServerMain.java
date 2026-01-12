@@ -7,6 +7,7 @@ import backend.login.Session;
 import backend.login.SessionManager;
 import backend.serverutils.PropertiesManager;
 
+import javax.swing.text.html.ImageView;
 import java.util.Scanner;
 
 public class CloudServerMain {
@@ -36,6 +37,16 @@ public class CloudServerMain {
         server.addContext(uploadContext);
         DownloadContext downloadContext = new DownloadContext();
         server.addContext(downloadContext);
+        SettingsContext settingsContext = new SettingsContext(HtmlDoc.scan("html/settings.html"));
+        server.addContext(settingsContext);
+        ImagePreviewContext imagePreviewContext = new ImagePreviewContext();
+        server.addContext(imagePreviewContext);
+        ImageViewContext imageViewContext = new ImageViewContext(HtmlDoc.scan("html/imageview.html"));
+        server.addContext(imageViewContext);
+        RenameContext renameContext = new RenameContext();
+        server.addContext(renameContext);
+        MoveContext moveContext = new MoveContext();
+        server.addContext(moveContext);
         CreateFolderContext createFolderContext = new CreateFolderContext();
         server.addContext(createFolderContext);
         FilesContext filesContext = new FilesContext();

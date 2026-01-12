@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EPX Cloud – Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a2540, #1e90ff);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header nav a {
+            color: #b6d6ff;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        header nav a:hover {
+            color: #fff;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .settings-card {
+            width: 820px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(18px);
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: fadeUp 0.6s ease;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .section {
+            margin-top: 30px;
+            padding: 22px;
+            background: rgba(0,0,0,0.35);
+            border-radius: 14px;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .section h3 {
+            margin-top: 0;
+        }
+
+        label {
+            display: block;
+            margin-top: 14px;
+            font-size: 14px;
+            color: #b6d6ff;
+        }
+
+        input {
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.12);
+            color: #fff;
+            outline: none;
+            transition: box-shadow 0.2s ease;
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 2px rgba(77,163,255,0.8);
+        }
+
+        .btn {
+            margin-top: 18px;
+            padding: 12px 22px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: linear-gradient(90deg, #4da3ff, #66ffcc);
+            color: #002b4d;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(77,163,255,0.5);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .danger {
+            background: rgba(255,0,0,0.15);
+            border: 2px solid rgba(255,0,0,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(90deg, #ff5f5f, #ff9a9a);
+            color: #4a0000;
+        }
+
+        .message {
+            margin-top: 18px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            display: none;
+            font-size: 14px;
+            animation: slideFade 0.4s ease;
+        }
+
+        @keyframes slideFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.success {
+            background: rgba(0,255,180,0.2);
+            color: #aaffea;
+        }
+
+        .message.error {
+            background: rgba(255,0,0,0.2);
+            color: #ffd6d6;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(10,20,40,0.95);
+            backdrop-filter: blur(16px);
+            padding: 30px;
+            border-radius: 18px;
+            width: 420px;
+            max-width: 90%;
+            text-align: center;
+            animation: modalIn 0.35s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h3 {
+            color: #ff9a9a;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #b6d6ff;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>EPX Cloud</h1>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/upload">Upload</a>
+        <a href="/files">Files</a>
+        <a href="/imageview">Images</a>
+        <a href="/settings">Settings</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+
+<main>
+    <div class="settings-card">
+        <h2>Account Settings</h2>
+
+        <div class="section">
+            <h3>Change Password</h3>
+
+            <label>Current Password</label>
+            <input type="password" id="oldPassword">
+
+            <label>New Password</label>
+            <input type="password" id="newPassword">
+
+            <label>Repeat New Password</label>
+            <input type="password" id="newPasswordRepeat">
+
+            <button class="btn" onclick="changePassword()">Change Password</button>
+            <div class="message" id="passwordMessage"></div>
+        </div>
+
+        <div class="section danger">
+            <h3>Delete my account</h3>
+            <p>This action is permanent.</p>
+            <button class="btn btn-danger" onclick="openDeleteModal()">Delete My Account</button>
+        </div>
+    </div>
+</main>
+
+<footer>© 2026 EPX Cloud</footer>
+
+<div class="modal-overlay" id="deleteModal">
+    <div class="modal">
+        <h3>Delete account?</h3>
+        <p>This cannot be undone.</p>
+        <div class="modal-buttons">
+            <button class="btn" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="confirmDeleteAccount()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showMessage(id, text, type) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = "message " + type;
+        el.style.display = "block";
+    }
+
+    function changePassword() {
+        const oldPassword = document.getElementById("oldPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const newPasswordRepeat = document.getElementById("newPasswordRepeat").value;
+
+        if (newPassword !== newPasswordRepeat) {
+            showMessage("passwordMessage", "Passwords do not match.", "error");
+            return;
+        }
+
+        if (oldPassword === "" || newPassword === "" || newPasswordRepeat === "") {
+            showMessage("passwordMessage", "All fields are required.", "error");
+            return;
+        }
+
+        fetch("/settings/change-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            }),
+        })
+            .then(response => {
+                return response.text().then(text => ({ status: response.status, text }));
+            })
+            .then(result => {
+                if (result.status === 200) {
+                    showMessage("passwordMessage", result.text, "success");
+                } else {
+                    showMessage("passwordMessage", result.text, "error");
+                }
+            })
+            .catch(() => {
+                showMessage("passwordMessage", "Error changing password.", "error");
+            });
+    }
+
+    function openDeleteModal() {
+        document.getElementById("deleteModal").classList.add("show");
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.remove("show");
+    }
+
+    function confirmDeleteAccount() {
+        fetch("/settings/delete-account", {
+            method: "POST",
+        })
+            .then(response => {
+                return response.text().then(text => ({ status: response.status, text }));
+            })
+            .then(result => {
+                if (result.status === 200) {
+                    window.location.href = "/login";
+                } else {
+                    showMessage("passwordMessage", result.text, "error");
+                }
+            })
+            .catch(() => {
+                showMessage("passwordMessage", "Error deleting account.", "error");
+            });
+    }
+</script>
+
+</body>
+</html>

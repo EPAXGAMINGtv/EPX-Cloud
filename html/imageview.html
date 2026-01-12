@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EPX Cloud – Image Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #0a2540, #1e90ff);
+            color: #fff;
+            min-height: 100vh;
+        }
+        header {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 { margin: 0; font-weight: 600; letter-spacing: 1px; }
+        header nav a {
+            color: #b6d6ff;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        header nav a:hover { color: #ffffff; }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .img-box {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .img-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(30,144,255,0.6);
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .img-box p {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #b6d6ff;
+            word-break: break-word;
+        }
+
+        /* FULLSCREEN VIEWER */
+        #viewerOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #viewerOverlay.show {
+            display: flex;
+        }
+
+        #viewerImage {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .nav-btn:hover {
+            color: #4da3ff;
+        }
+
+        #prevBtn { left: 20px; }
+        #nextBtn { right: 20px; }
+
+        #closeBtn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            cursor: pointer;
+            color: white;
+            transition: color 0.2s;
+        }
+
+        #closeBtn:hover {
+            color: #ff4d4d;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #b6d6ff;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>EPX Cloud – Image Viewer</h1>
+    <nav>
+        <a href="/home">Home</a>
+        <a href="/upload">Upload</a>
+        <a href="/files">Files</a>
+        <a href="/imageview">Images</a>
+        <a href="/settings">Settings</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</header>
+
+<div class="gallery">
+    {{IMAGES}}
+</div>
+
+<!-- FULLSCREEN VIEWER -->
+<div id="viewerOverlay">
+    <span id="closeBtn">✕</span>
+    <span id="prevBtn" class="nav-btn">❮</span>
+    <img id="viewerImage" src="" alt="Full size image">
+    <span id="nextBtn" class="nav-btn">❯</span>
+</div>
+
+<footer>
+    © 2026 EPX Cloud
+</footer>
+
+<script>
+    const images = Array.from(document.querySelectorAll(".img-box img"));
+    const overlay = document.getElementById("viewerOverlay");
+    const viewerImage = document.getElementById("viewerImage");
+
+    let currentIndex = 0;
+    let zoom = 1;
+
+    function openViewer(index) {
+        currentIndex = index;
+        viewerImage.src = images[index].src;
+        zoom = 1;
+        viewerImage.style.transform = "scale(1)";
+        overlay.classList.add("show");
+    }
+
+    function closeViewer() {
+        overlay.classList.remove("show");
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        openViewer(currentIndex);
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        openViewer(currentIndex);
+    }
+
+    images.forEach((img, index) => {
+        img.addEventListener("click", () => openViewer(index));
+    });
+
+    document.getElementById("closeBtn").onclick = closeViewer;
+    document.getElementById("nextBtn").onclick = nextImage;
+    document.getElementById("prevBtn").onclick = prevImage;
+
+    document.addEventListener("keydown", (e) => {
+        if (!overlay.classList.contains("show")) return;
+
+        if (e.key === "Escape") closeViewer();
+        if (e.key === "ArrowRight") nextImage();
+        if (e.key === "ArrowLeft") prevImage();
+    });
+
+    viewerImage.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        zoom += e.deltaY * -0.001;
+        zoom = Math.min(Math.max(zoom, 0.5), 3);
+        viewerImage.style.transform = `scale(${zoom})`;
+    });
+
+    overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) {
+            closeViewer();
+        }
+    });
+</script>
+
+</body>
+</html>

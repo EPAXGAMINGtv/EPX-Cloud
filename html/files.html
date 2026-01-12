@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>EPX Cloud – Your Files</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * { box-sizing: border-box; font-family: "Segoe UI", Tahoma, sans-serif; }
         body {
@@ -95,12 +96,17 @@
         .file-item:hover {
             background: rgba(10,40,80,0.9);
             box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+            transform: translateY(-2px);
             z-index: 1;
         }
         .file-name {
             font-size: 16px;
             color: #e3f1ff;
             word-break: break-all;
+            transition: color 0.2s;
+        }
+        .file-name.clickable:hover {
+            color: #4da3ff;
         }
         .menu-wrapper {
             position: relative;
@@ -112,6 +118,11 @@
             font-size: 22px;
             cursor: pointer;
             padding: 5px 10px;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .menu-btn:hover {
+            color: #4da3ff;
+            transform: scale(1.1);
         }
         .menu {
             display: none;
@@ -234,6 +245,83 @@
             min-width: 40px;
             text-align: right;
         }
+
+        .rename-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(8px);
+        }
+        .rename-modal.show {
+            display: flex;
+        }
+        .rename-content {
+            background: linear-gradient(135deg, rgba(10,37,64,0.95), rgba(30,144,255,0.95));
+            padding: 35px;
+            border-radius: 16px;
+            width: 450px;
+            max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid rgba(77,163,255,0.3);
+        }
+        .rename-content h3 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .rename-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(0,0,0,0.4);
+            border: 2px solid rgba(77,163,255,0.4);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .rename-input:focus {
+            border-color: #4da3ff;
+            box-shadow: 0 0 0 3px rgba(77,163,255,0.2);
+        }
+        .rename-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-rename {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+        }
+        .btn-rename:hover {
+            transform: translateY(-2px);
+        }
+        .btn-confirm {
+            background: linear-gradient(135deg, #4da3ff, #66ffcc);
+            color: #000;
+        }
+        .btn-confirm:hover {
+            box-shadow: 0 6px 20px rgba(77,163,255,0.5);
+        }
+        .btn-cancel {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn-cancel:hover {
+            background: rgba(255,255,255,0.15);
+        }
     </style>
 </head>
 <body>
@@ -242,7 +330,10 @@
     <h1>EPX Cloud</h1>
     <nav>
         <a href="/home">Home</a>
+        <a href="/upload">Upload</a>
         <a href="/files">Files</a>
+        <a href="/imageview">Images</a>
+        <a href="/settings">Settings</a>
         <a href="/logout">Logout</a>
     </nav>
 </header>
@@ -258,7 +349,7 @@
         <div id="files-container">
             <div class="drop-overlay">
                 <div class="drop-icon">☁</div>
-                <div class="drop-text">Dateien hierher ziehen</div>
+                <div class="drop-text">Drop files here</div>
                 <div class="drop-subtext">Drag & Drop Upload</div>
             </div>
 
@@ -275,6 +366,17 @@
     </div>
 </main>
 
+<div class="rename-modal" id="rename-modal">
+    <div class="rename-content">
+        <h3>Rename Item</h3>
+        <input type="text" class="rename-input" id="rename-input" placeholder="Enter new name">
+        <div class="rename-buttons">
+            <button class="btn-rename btn-cancel" onclick="closeRenameModal()">Cancel</button>
+            <button class="btn-rename btn-confirm" onclick="confirmRename()">Rename</button>
+        </div>
+    </div>
+</div>
+
 <footer>© 2026 EPX Cloud</footer>
 
 <script>
@@ -284,17 +386,109 @@
         currentFolder = urlParams.get('folder');
     }
 
+    let renameFilePath = "";
+
     function createFolder() {
         const input = document.getElementById("new-folder-name");
         const name = input.value.trim();
 
         if (!name) {
-            alert("Bitte gib einen Folder-Namen ein!");
+            alert("Please enter a folder name!");
             return;
         }
 
         const url = `/createfolder?name=${encodeURIComponent(name)}${currentFolder ? '&folder=' + encodeURIComponent(currentFolder) : ''}`;
         window.location.href = url;
+    }
+
+    function renameItem(filePath, currentName) {
+        renameFilePath = filePath;
+        const modal = document.getElementById('rename-modal');
+        const input = document.getElementById('rename-input');
+        input.value = currentName;
+        modal.classList.add('show');
+        input.focus();
+        input.select();
+    }
+
+    function closeRenameModal() {
+        const modal = document.getElementById('rename-modal');
+        modal.classList.remove('show');
+        renameFilePath = "";
+    }
+
+    function confirmRename() {
+        const input = document.getElementById('rename-input');
+        const newName = input.value.trim();
+
+        if (newName === "" || newName === null) {
+            alert("Please enter a valid name!");
+            return;
+        }
+
+        if (newName.includes('/') || newName.includes('\\') || newName.includes('..')) {
+            alert("Invalid name! No path characters allowed.");
+            return;
+        }
+
+        const url = `/rename?file=${encodeURIComponent(renameFilePath)}&newname=${encodeURIComponent(newName)}`;
+        window.location.href = url;
+    }
+
+    function openImageViewer(imageUrl) {
+        const overlay = document.createElement('div');
+        overlay.id = 'imageViewerOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.style.cssText = `
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        `;
+
+        const closeBtn = document.createElement('span');
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            cursor: pointer;
+            color: white;
+            transition: color 0.2s;
+        `;
+        closeBtn.onmouseover = () => closeBtn.style.color = '#ff4d4d';
+        closeBtn.onmouseout = () => closeBtn.style.color = 'white';
+        closeBtn.onclick = () => document.body.removeChild(overlay);
+
+        overlay.appendChild(img);
+        overlay.appendChild(closeBtn);
+        overlay.onclick = (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        };
+
+        document.body.appendChild(overlay);
+
+        const closeOnEsc = (e) => {
+            if (e.key === 'Escape' && document.getElementById('imageViewerOverlay')) {
+                document.body.removeChild(overlay);
+                document.removeEventListener('keydown', closeOnEsc);
+            }
+        };
+        document.addEventListener('keydown', closeOnEsc);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -317,6 +511,26 @@
 
         document.addEventListener("click", () => {
             menus.forEach(m => m.style.display = "none");
+        });
+
+        const renameInput = document.getElementById('rename-input');
+        renameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                confirmRename();
+            }
+        });
+
+        const renameModal = document.getElementById('rename-modal');
+        renameModal.addEventListener('click', (e) => {
+            if (e.target === renameModal) {
+                closeRenameModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && renameModal.classList.contains('show')) {
+                closeRenameModal();
+            }
         });
 
         const dropZone = document.getElementById("files-container");
@@ -361,9 +575,6 @@
             let uploadedSize = 0;
 
             uploadBar.classList.add("active");
-            uploadFill.style.width = "0%";
-            uploadPercent.textContent = "0%";
-            uploadLabel.textContent = "Uploading " + fileArray.length + " file(s)...";
 
             let index = 0;
 
@@ -371,53 +582,40 @@
                 if (index >= fileArray.length) {
                     uploadFill.style.width = "100%";
                     uploadPercent.textContent = "100%";
-                    uploadLabel.textContent = "Fertig";
+
                     setTimeout(() => {
-                        if (currentFolder) {
-                            window.location.href = '/files?folder=' + encodeURIComponent(currentFolder);
-                        } else {
-                            window.location.href = '/files';
-                        }
+                        window.location.reload();
                     }, 500);
                     return;
                 }
 
                 const file = fileArray[index];
-                const formData = new FormData();
-                formData.append("file", file);
-
                 const xhr = new XMLHttpRequest();
-                const uploadUrl = `/upload${currentFolder ? '?folder=' + encodeURIComponent(currentFolder) : ''}`;
-                console.log("Uploading to:", uploadUrl);
-                xhr.open("POST", uploadUrl, true);
+                const url = `/upload${currentFolder ? '?folder=' + encodeURIComponent(currentFolder) : ''}`;
 
-                xhr.upload.onprogress = function (e) {
+                xhr.open("POST", url, true);
+                xhr.setRequestHeader("X-Filename", file.name);
+
+                xhr.upload.onprogress = e => {
                     if (e.lengthComputable) {
-                        const fileProgress = e.loaded;
-                        const currentUploaded = uploadedSize + fileProgress;
-                        const percent = Math.round((currentUploaded / totalSize) * 100);
+                        const percent = Math.round(((uploadedSize + e.loaded) / totalSize) * 100);
                         uploadFill.style.width = percent + "%";
                         uploadPercent.textContent = percent + "%";
                     }
                 };
 
-                xhr.onload = function () {
+                xhr.onload = () => {
                     uploadedSize += file.size;
                     index++;
                     uploadNext();
                 };
 
-                xhr.onerror = function () {
-                    console.error("Upload error for file:", file.name);
-                    index++;
-                    uploadNext();
-                };
-
-                xhr.send(formData);
+                xhr.send(file);
             }
 
             uploadNext();
         }
+
     });
 </script>
 
