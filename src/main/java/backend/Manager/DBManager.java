@@ -3,13 +3,12 @@ package backend.Manager;
 import backend.CloudServerMain;
 import backend.encryption.Hasher;
 import backend.logger.Logger;
-import backend.serverutils.PropertiesManager;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 public class DBManager {
@@ -56,6 +55,26 @@ public class DBManager {
         }
     }
 
+    public void createCryptionTableIfNotExists() {
+        if (connection != null) {
+            String createTableSql = "CREATE TABLE IF NOT EXISTS cryption (" +
+                    "`encryption_key` TEXT NOT NULL" +
+                    ");";
+
+            createTable(createTableSql);
+            String existingKey = get_cryptionKey();
+            if (existingKey == null) {
+                String newKey = generateRandomAESKey();
+                set_cryptionKey(newKey);
+                Logger.info("New encryption key generated and stored.");
+            } else {
+                Logger.info("Encryption key already exists.");
+            }
+        }
+    }
+
+
+
     public void createTableIfNotExistsUserdata(){
         if (connection != null){
             String sql = "CREATE TABLE IF NOT EXISTS user_data (" +
@@ -79,6 +98,36 @@ public class DBManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public void set_cryptionKey(String encryptionKey) {
+        if (connection != null) {
+            String sql = "INSERT INTO cryption (`encryption_key`) VALUES (?)";
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, encryptionKey);
+                stmt.executeUpdate();
+                System.out.println("Encryption key successfully set");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    public String get_cryptionKey() {
+        if (connection != null) {
+            String sql = "SELECT `encryption_key` FROM cryption LIMIT 1";
+            try (Statement stmt = connection.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                if (rs.next()) {
+                    return rs.getString("encryption_key");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 
@@ -260,4 +309,18 @@ public class DBManager {
             System.exit(-1);
         }
     }
+
+    private String generateRandomAESKey() {
+        try {
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(256);
+            SecretKey secretKey = keyGenerator.generateKey();
+            return Base64.getEncoder().encodeToString(secretKey.getEncoded());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }

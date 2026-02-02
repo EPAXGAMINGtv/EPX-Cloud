@@ -1,16 +1,14 @@
 package backend.Server;
 
 import backend.logger.Logger;
-import backend.serverutils.PropertiesManager;
+import backend.Manager.PropertiesManager;
 import com.sun.net.httpserver.HttpServer;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 public class EpxHTTPServer {
 
@@ -24,6 +22,7 @@ public class EpxHTTPServer {
         int port = manager.getInt("port");
         try {
             server = HttpServer.create(new InetSocketAddress(port), 0);
+            server.setExecutor(Executors.newFixedThreadPool(200));
         } catch (IOException e) {
             Logger.error("can't create HTTP Server");
             e.printStackTrace();

@@ -1,13 +1,13 @@
 package backend;
 import backend.Manager.DBManager;
+import backend.Manager.EncryptionManager;
 import backend.Server.*;
 import backend.file.FileManager;
 import backend.logger.Logger;
 import backend.login.Session;
 import backend.login.SessionManager;
-import backend.serverutils.PropertiesManager;
+import backend.Manager.PropertiesManager;
 
-import javax.swing.text.html.ImageView;
 import java.util.Scanner;
 
 public class CloudServerMain {
@@ -17,14 +17,17 @@ public class CloudServerMain {
     private static EpxHTTPServer server;
     private static DBManager dbManager;
     private  static FileManager fmgr;
+    private static EncryptionManager encryptionManager;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception {
         Logger.info("starting EpxCloudServer...");
         serverpropetiesmgr = new PropertiesManager("server.propeties");
         serverpropetiesmgr.load();
         dbManager = new DBManager();
         dbManager.connectToDB();
         dbManager.createTableIfNotExistsUserdata();
+        dbManager.createCryptionTableIfNotExists();
+        encryptionManager = new EncryptionManager();
         server = new EpxHTTPServer(serverpropetiesmgr);
         server.setIcon("html/assets/icon.png");
         HtmlContext index = new HtmlContext("/",HtmlDoc.scan("html/index.html"));
@@ -61,6 +64,8 @@ public class CloudServerMain {
         fmgr.start("cloudfiles");
         Scanner input = new Scanner(System.in);
         running =true;
+        //EncryptionManager.decryptFile("server.propeties");
+        //EncryptionManager.encryptFile("server.propeties");
         if (running) {
             Logger.info("server marked as running!");
         }else {
@@ -76,7 +81,7 @@ public class CloudServerMain {
                 stopServer();
                 Logger.close();
                 System.exit(0);
-            }else if(command.equalsIgnoreCase("restart")){
+            }else if(command.equalsIgnoreCase("restart")){ 
                 stopServer();
                 restartApplication();
             }else {
